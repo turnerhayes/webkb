@@ -1,0 +1,24 @@
+<ol
+	class="track"
+	title="{{name}}"
+>
+	{{#notes}}
+	<li
+		class="note"
+		data-note-id="{{id}}"
+		data-note-key="{{key}}"
+		data-note-name="{{name}}"
+		data-note-velocity="{{velocity}}"
+		data-note-duration="{{duration}}"
+		data-overlapping-note-count="{{overlappingNotes.length}}"
+		data-overlapping-notes="{{Serialize overlappingNotes}}"
+		data-toggle="popover"
+		data-placement="top"
+		data-title="{{name}}"
+		data-html="true"
+		data-content="{{> note-popup}}"
+		data-trigger="hover"
+		style="left: {{Round startPercentage 4}}%; width: {{Round durationPercentage 4}}%; opacity: {{Round (Divide velocity 127) 2}}"
+	></li>
+	{{/notes}}
+</ol>

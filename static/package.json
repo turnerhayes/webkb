@@ -1,0 +1,19 @@
+{
+  "name": "webkb-static",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+  },
+  "author": "Turner Hayes <dev@turnerhayes.com>",
+  "license": "ISC",
+  "dependencies": {
+    "backbone": "^1.2.3",
+    "bootstrap": "^3.3.6",
+    "font-awesome": "^4.5.0",
+    "jquery": "^2.2.0",
+    "lodash": "^4.0.0",
+    "q": "^1.4.1"
+  },
+  "devDependencies": {}
+}
