@@ -18,7 +18,7 @@ var config = require('./lib/utils/config');
 
 var routes               = require('./routes/index');
 var authenticationRoutes = require('./routes/authentication');
-var gameRoutes = require('./routes/game');
+var gameRoutes           = require('./routes/game');
 
 debug('Connecting to database at ', config.data.store.url);
 mongoose.connect(config.data.store.url);
@@ -50,6 +50,8 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(session.instance);
 app.use('/static', express.static(config.paths.static));
+app.use('/soundfont', express.static(path.resolve(__dirname, 'soundfont')));
+app.use('/soundfont-original', express.static(path.resolve(__dirname, 'soundfont-original')));
 
 setupPassport(app);
 

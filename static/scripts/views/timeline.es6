@@ -7,6 +7,7 @@ import AudioPlayer             from "../lib/audio-player";
 import MIDIListener            from "../lib/midi-listener";
 import MIDIMessage             from "../lib/midi-message";
 import MIDIFileParser          from '../../../lib/utils/midi-file-parser';
+import MIDIProgramNames        from '../../../lib/utils/midi-file-parser/midi-programs';
 import timelinePartialTemplate from '../../templates/partials/timeline.hbs';
 
 
@@ -35,7 +36,7 @@ function _transformData(file, options) {
 	let tracks = _.map(
 		file.tracks,
 		function(track, trackIndex) {
-			let notes = [];
+			let events = [];
 			let trackEventCount = track.events.length;
 
 			_.each(
@@ -60,6 +61,7 @@ function _transformData(file, options) {
 						}
 
 						let noteData = {
+							type: 'note',
 							id: _.uniqueId('track' + trackIndex + 'note-'),
 							key: event.key,
 							name: event.keyName,
@@ -75,9 +77,10 @@ function _transformData(file, options) {
 						noteData.durationPercentage = (noteData.duration * 100) / totalWindowDuration;
 						
 						noteData.overlappingNotes = _.reduce(
-							notes,
+							events,
 							function(overlapping, note) {
 								if (
+									note.type === 'note' &&
 									// note starts within the current note's duration
 									(
 										note.start >= noteData.start &&
@@ -112,13 +115,27 @@ function _transformData(file, options) {
 							return;
 						}
 
-						notes.push(noteData);
+						events.push(noteData);
+					}
+					else if (event.name === 'ProgramChange') {
+						let eventData = {
+							type: "program",
+							programNumber: event.programNumber,
+							programInfo: MIDIProgramNames[event.programNumber],
+							start: event.microsecondOffset,
+						};
+						
+						eventData.startPercentage = (
+							(eventData.start - startMicroseconds) * 100
+						) / totalWindowDuration;
+
+						events.push(eventData);
 					}
 				}
 			);
 
 			return {
-				notes,
+				events,
 			};
 		}
 	);
@@ -198,20 +215,35 @@ export default class TimelineView extends Backbone.View {
 			}
 		);
 
-		let transformed = _transformData(
+		view._transformedData = _transformData(
 			view._file,
 			{
 				window: _.get(options, 'window'),
 			}
 		);
 
-		view._$timelineContainer.html(timelinePartialTemplate(transformed));
+		view._$timelineContainer.html(timelinePartialTemplate(view._transformedData));
 
 		view._$timelineContainer.find('[data-toggle="popover"]').popover();
 	}
 
 	_playNoteFromElement($note) {
 		let view = this;
+
+		let trackNumber = $note.closest('.track').data('track-number');
+
+		let eventIndex = $note.data('event-index');
+
+		let track = view._transformedData.tracks[trackNumber];
+
+		let previousProgramChangeEvent;
+
+		for (let i = eventIndex - 1; i >= 0; i--) {
+			if (track.events[i].type === 'program') {
+				previousProgramChangeEvent = track.events[i];
+				break;
+			}
+		}
 
 		let key = $note.data('note-key');
 
@@ -225,7 +257,13 @@ export default class TimelineView extends Backbone.View {
 			velocity = (velocity * 100) / 127;
 			duration = duration / 1000;
 
-			view._player.playNote(key, velocity, 1, duration);
+			view._player.playInstrument(
+				_.result(previousProgramChangeEvent, 'programNumber', 0),
+				key,
+				velocity,
+				1,
+				duration
+			);
 		}
 		else {
 			view._midiListenerPromise.done(
@@ -249,6 +287,35 @@ export default class TimelineView extends Backbone.View {
 				}
 			);
 		}
+	}
+
+	_getNoteDataFromNode($node) {
+		let view = this;
+
+		let trackNumber = $node.closest('.track').data('track-number');
+
+		let eventIndex = $node.data('event-index');
+
+		let track = view._transformedData.tracks[trackNumber];
+
+		let note = track.events[eventIndex];
+
+		let previousProgramChangeEvent;
+
+		for (let i = eventIndex - 1; i >= 0; i--) {
+			if (track.events[i].type === 'program') {
+				previousProgramChangeEvent = track.events[i];
+				break;
+			}
+		}
+
+		return {
+			key: note.key,
+			velocity: note.velocity,
+			start: note.start,
+			duration: note.duration,
+			programNumber: _.result(previousProgramChangeEvent, 'programNumber', 0),
+		};
 	}
 
 	_handleChangeMIDIFileUpload(event) {
@@ -297,10 +364,30 @@ export default class TimelineView extends Backbone.View {
 			).join(',')
 		);
 
-		$target.add($overlappingNotes).each(
-			function() {
-				view._playNoteFromElement($(this));
+		// $target.add($overlappingNotes).each(
+		// 	function() {
+		// 		view._playNoteFromElement($(this));
+		// 	}
+		// );
+
+		let notes = _.map(
+			$target.add($overlappingNotes),
+			function(el) {
+				return view._getNoteDataFromNode($(el));
 			}
 		);
+
+		let firstNoteStart = _.min(_.map(notes, 'start'));
+
+		_.each(
+			notes,
+			function(note) {
+				// AudioPlayer expects notes in seconds, not microseconds
+				note.start = (note.start - firstNoteStart) / 1e6;
+				note.volume = note.velocity / 127;
+			}
+		);
+
+		view._player.playNotes(notes);
 	}
 }

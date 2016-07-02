@@ -1,19 +1,116 @@
 "use strict";
 
-import $         from 'jquery';
-import _         from 'lodash';
-import MIDINotes from './midi-notes';
+import $               from 'jquery';
+import _               from 'lodash';
+import Q               from 'q';
+import SoundfontPlayer from 'soundfont-player';
+import InstrumentNames from 'soundfont-player/names/fluidR3';
+import MIDINotes       from './midi-notes';
 
-var AudioContext = window.AudioContext || window.webkitAudioContext;
+let AudioContext = window.AudioContext || window.webkitAudioContext;
+
+let _instrumentCache = {};
+
+class AudioPlayer {
 
 
-export default class AudioPlayer {
 	constructor() {
 		let player = this;
 
 		player._context = new AudioContext();
 
 		player._oscillatorsByNoteAndChannel = {};
+	}
+
+	_getInstruments(instrumentIDs, noteNumbers) {
+		let player = this;
+
+		return Q.all(
+			_.map(
+				_.uniq(instrumentIDs),
+				function(instrumentID) {
+					return Q(
+						instrumentID in _instrumentCache ?
+							_instrumentCache[instrumentID] :
+							SoundfontPlayer.instrument(
+								player._context,
+								// InstrumentNames[instrumentID],
+								'/soundfont-original/' + InstrumentNames[instrumentID] + '-mp3.js',
+								{
+									// soundfont: 'FluidR3_GM',
+									// from: '/soundfont/',
+									// notes: noteNumbers,
+								}
+							).then(
+								function(inst) {
+									_instrumentCache[instrumentID] = inst;
+									
+									return inst;
+								}
+							)
+					).then(
+						function(inst) {
+							return [instrumentID, inst];
+						}
+					);
+				}
+			)
+		).then(
+			function(instrumentPairs) {
+				return _.fromPairs(instrumentPairs);
+			}
+		);
+	}
+
+	playInstrument(instrumentID, note, volume, channel, options) {
+		let player = this;
+
+		options = options || {};
+
+		return Q(
+			SoundfontPlayer.instrument(
+				player._context,
+				InstrumentNames[instrumentID],
+				{
+					soundfont: 'FluidR3_GM',
+					from: '/soundfonts/'
+				}
+			).then(
+				function(instrument) {
+					instrument.play(
+						note,
+						_.isNumber(options.start) ?
+							options.start :
+							player._context.currentTime,
+						{
+							duration: options.duration
+						}
+					);
+				}
+			)
+		);
+	}
+
+	playNotes(notes) {
+		let player = this;
+
+		return player._getInstruments(_.map(notes, 'programNumber'), _.map(notes, 'key')).then(
+			function(instruments) {
+				_.each(
+					notes,
+					function(note) {
+						instruments[note.programNumber].play(
+							note.key,
+							player._context.currentTime + (note.start || 0),
+							{
+								duration: note.duration,
+								volume: note.volume,
+							}
+						);
+					}
+				);
+			}
+		);
 	}
 
 	playNote(note, volume, channel, durationInMilliseconds) {
@@ -76,3 +173,5 @@ export default class AudioPlayer {
 		return note + '-' + channel;
 	}
 }
+
+export default AudioPlayer;

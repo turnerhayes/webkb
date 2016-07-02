@@ -6,10 +6,10 @@
 	data-window-start="{{@root/window.start}}"
 	data-window-end="{{@root/window.end}}"
 >
-	{{#tracks}}
+	{{#each tracks}}
 	<li class="track-item">
-		{{> timeline/track}}
+		{{> timeline/track track-number=@index}}
 	</li>
-	{{/tracks}}
+	{{/each}}
 </ul>
 <div class="window-marker window-end-marker" data-value="{{@root/window.end}}" title="End: {{@root/window.end}}%"></div>
