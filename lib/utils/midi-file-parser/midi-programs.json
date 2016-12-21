@@ -1,0 +1,534 @@
+[
+	{
+		"name": "Acoustic Grand Piano",
+		"category": "Piano"
+	},
+	{
+		"name": "Bright Acoustic Piano",
+		"category": "Piano"
+	},
+	{
+		"name": "Electric Grand Piano",
+		"category": "Piano"
+	},
+	{
+		"name": "Honky-tonk Piano",
+		"category": "Piano"
+	},
+	{
+		"name": "Electric Piano 1",
+		"category": "Piano"
+	},
+	{
+		"name": "Electric Piano 2",
+		"category": "Piano"
+	},
+	{
+		"name": "Harpsichord",
+		"category": "Piano"
+	},
+	{
+		"name": "Clavinet",
+		"category": "Piano"
+	},
+
+
+	{
+		"name": "Celesta",
+		"category": "Chromatic Percussion"
+	},
+	{
+		"name": "Glockenspiel",
+		"category": "Chromatic Percussion"
+	},
+	{
+		"name": "Music Box",
+		"category": "Chromatic Percussion"
+	},
+	{
+		"name": "Vibraphone",
+		"category": "Chromatic Percussion"
+	},
+	{
+		"name": "Marimba",
+		"category": "Chromatic Percussion"
+	},
+	{
+		"name": "Xylophone",
+		"category": "Chromatic Percussion"
+	},
+	{
+		"name": "Tubular Bells",
+		"category": "Chromatic Percussion"
+	},
+	{
+		"name": "Dulcimer",
+		"category": "Chromatic Percussion"
+	},
+
+
+	{
+		"name": "Drawbar Organ",
+		"category": "Organ"
+	},
+	{
+		"name": "Percussive Organ",
+		"category": "Organ"
+	},
+	{
+		"name": "Rock Organ",
+		"category": "Organ"
+	},
+	{
+		"name": "Church Organ",
+		"category": "Organ"
+	},
+	{
+		"name": "Reed Organ",
+		"category": "Organ"
+	},
+	{
+		"name": "Accordion",
+		"category": "Organ"
+	},
+	{
+		"name": "Harmonica",
+		"category": "Organ"
+	},
+	{
+		"name": "Tango Accordion",
+		"category": "Organ"
+	},
+
+
+	{
+		"name": "Acoustic Guitar (nylon)",
+		"category": "Guitar"
+	},
+	{
+		"name": "Acoustic Guitar (steel)",
+		"category": "Guitar"
+	},
+	{
+		"name": "Electric Guitar (jazz)",
+		"category": "Guitar"
+	},
+	{
+		"name": "Electric Guitar (clean)",
+		"category": "Guitar"
+	},
+	{
+		"name": "Electric Guitar (muted)",
+		"category": "Guitar"
+	},
+	{
+		"name": "Overdriven Guitar",
+		"category": "Guitar"
+	},
+	{
+		"name": "Distortion Guitar",
+		"category": "Guitar"
+	},
+	{
+		"name": "Guitar Harmonics",
+		"category": "Guitar"
+	},
+
+
+	{
+		"name": "Acoustic Bass",
+		"category": "Bass"
+	},
+	{
+		"name": "Electric Bass (finger)",
+		"category": "Bass"
+	},
+	{
+		"name": "Electric Bass (pick)",
+		"category": "Bass"
+	},
+	{
+		"name": "Fretless Bass",
+		"category": "Bass"
+	},
+	{
+		"name": "Slap Bass 1",
+		"category": "Bass"
+	},
+	{
+		"name": "Slap Bass 2",
+		"category": "Bass"
+	},
+	{
+		"name": "Synth Bass 1",
+		"category": "Bass"
+	},
+	{
+		"name": "Synth Bass 2",
+		"category": "Bass"
+	},
+
+	{
+		"name": "Violin",
+		"category": "Strings"
+	},
+	{
+		"name": "Viola",
+		"category": "Strings"
+	},
+	{
+		"name": "Cello",
+		"category": "Strings"
+	},
+	{
+		"name": "Contrabass",
+		"category": "Strings"
+	},
+	{
+		"name": "Tremolo Strings",
+		"category": "Strings"
+	},
+	{
+		"name": "Pizzicato Strings",
+		"category": "Strings"
+	},
+	{
+		"name": "Orchestral Harp",
+		"category": "Strings"
+	},
+	{
+		"name": "Timpani",
+		"category": "Strings"
+	},
+
+
+	{
+		"name": "String Ensemble 1",
+		"category": "Ensemble"
+	},
+	{
+		"name": "String Ensemble 2",
+		"category": "Ensemble"
+	},
+	{
+		"name": "Synth Strings 1",
+		"category": "Ensemble"
+	},
+	{
+		"name": "Synth Strings 2",
+		"category": "Ensemble"
+	},
+	{
+		"name": "Choir Aahs",
+		"category": "Ensemble"
+	},
+	{
+		"name": "Voice Oohs",
+		"category": "Ensemble"
+	},
+	{
+		"name": "Synth Choir",
+		"category": "Ensemble"
+	},
+	{
+		"name": "Orchestra Hit",
+		"category": "Ensemble"
+	},
+
+	{
+		"name": "Trumpet",
+		"category": "Brass"
+	},
+	{
+		"name": "Trombone",
+		"category": "Brass"
+	},
+	{
+		"name": "Tuba",
+		"category": "Brass"
+	},
+	{
+		"name": "Muted Trumpet",
+		"category": "Brass"
+	},
+	{
+		"name": "French Horn",
+		"category": "Brass"
+	},
+	{
+		"name": "Brass Section",
+		"category": "Brass"
+	},
+	{
+		"name": "Synth Brass 1",
+		"category": "Brass"
+	},
+	{
+		"name": "Synth Brass 2",
+		"category": "Brass"
+	},
+
+	{
+		"name": "Soprano Sax",
+		"category": "Reed"
+	},
+	{
+		"name": "Alto Sax",
+		"category": "Reed"
+	},
+	{
+		"name": "Tenor Sax",
+		"category": "Reed"
+	},
+	{
+		"name": "Baritone Sax",
+		"category": "Reed"
+	},
+	{
+		"name": "Oboe",
+		"category": "Reed"
+	},
+	{
+		"name": "English Horn",
+		"category": "Reed"
+	},
+	{
+		"name": "Bassoon",
+		"category": "Reed"
+	},
+	{
+		"name": "Clarinet",
+		"category": "Reed"
+	},
+
+	{
+		"name": "Piccolo",
+		"category": "Pipe"
+	},
+	{
+		"name": "Flute",
+		"category": "Pipe"
+	},
+	{
+		"name": "Recorder",
+		"category": "Pipe"
+	},
+	{
+		"name": "Pan Flute",
+		"category": "Pipe"
+	},
+	{
+		"name": "Blown bottle",
+		"category": "Pipe"
+	},
+	{
+		"name": "Shakuhachi",
+		"category": "Pipe"
+	},
+	{
+		"name": "Whistle",
+		"category": "Pipe"
+	},
+	{
+		"name": "Ocarina",
+		"category": "Pipe"
+	},
+
+	{
+		"name": "Lead 1 (square)",
+		"category": "Synth Lead"
+	},
+	{
+		"name": "Lead 2 (sawtooth)",
+		"category": "Synth Lead"
+	},
+	{
+		"name": "Lead 3 (calliope)",
+		"category": "Synth Lead"
+	},
+	{
+		"name": "Lead 4 chiff",
+		"category": "Synth Lead"
+	},
+	{
+		"name": "Lead 5 (charang)",
+		"category": "Synth Lead"
+	},
+	{
+		"name": "Lead 6 (voice)",
+		"category": "Synth Lead"
+	},
+	{
+		"name": "Lead 7 (fifths)",
+		"category": "Synth Lead"
+	},
+	{
+		"name": "Lead 8 (bass + lead)",
+		"category": "Synth Lead"
+	},
+
+	{
+		"name": "Pad 1 (new age)",
+		"category": "Synth Pad"
+	},
+	{
+		"name": "Pad 2 (warm)",
+		"category": "Synth Pad"
+	},
+	{
+		"name": "Pad 3 (polysynth)",
+		"category": "Synth Pad"
+	},
+	{
+		"name": "Pad 4 (choir)",
+		"category": "Synth Pad"
+	},
+	{
+		"name": "Pad 5 (bowed)",
+		"category": "Synth Pad"
+	},
+	{
+		"name": "Pad 6 (metallic)",
+		"category": "Synth Pad"
+	},
+	{
+		"name": "Pad 7 (halo)",
+		"category": "Synth Pad"
+	},
+	{
+		"name": "Pad 8 (sweep)",
+		"category": "Synth Pad"
+	},
+
+	{
+		"name": "FX 1 (rain)",
+		"category": "Synth Effects"
+	},
+	{
+		"name": "FX 2 (soundtrack)",
+		"category": "Synth Effects"
+	},
+	{
+		"name": "FX 3 (crystal)",
+		"category": "Synth Effects"
+	},
+	{
+		"name": " FX 4 (atmosphere)",
+		"category": "Synth Effects"
+	},
+	{
+		"name": " FX 5 (brightness)",
+		"category": "Synth Effects"
+	},
+	{
+		"name": " FX 6 (goblins)",
+		"category": "Synth Effects"
+	},
+	{
+		"name": " FX 7 (echoes)",
+		"category": "Synth Effects"
+	},
+	{
+		"name": " FX 8 (sci-fi)",
+		"category": "Synth Effects"
+	},
+
+	{
+		"name": "Sitar",
+		"category": "Ethnic"
+	},
+	{
+		"name": "Banjo",
+		"category": "Ethnic"
+	},
+	{
+		"name": "Shamisen",
+		"category": "Ethnic"
+	},
+	{
+		"name": "Koto",
+		"category": "Ethnic"
+	},
+	{
+		"name": "Kalimba",
+		"category": "Ethnic"
+	},
+	{
+		"name": "Bagpipe",
+		"category": "Ethnic"
+	},
+	{
+		"name": "Fiddle",
+		"category": "Ethnic"
+	},
+	{
+		"name": "Shanai",
+		"category": "Ethnic"
+	},
+
+	{
+		"name": "Tinkle Bell",
+		"category": "Percussive"
+	},
+	{
+		"name": "Agogo",
+		"category": "Percussive"
+	},
+	{
+		"name": "Steel Drums",
+		"category": "Percussive"
+	},
+	{
+		"name": "Woodblock",
+		"category": "Percussive"
+	},
+	{
+		"name": "Taiko Drum",
+		"category": "Percussive"
+	},
+	{
+		"name": "Melodic Tom",
+		"category": "Percussive"
+	},
+	{
+		"name": "Synth Drum",
+		"category": "Percussive"
+	},
+	{
+		"name": "Reverse Cymbal",
+		"category": "Percussive"
+	},
+
+	{
+		"name": "Guitar Fret Noise",
+		"category": "Sound effects"
+	},
+	{
+		"name": "Breath Noise",
+		"category": "Sound effects"
+	},
+	{
+		"name": "Seashore",
+		"category": "Sound effects"
+	},
+	{
+		"name": "Bird Tweet",
+		"category": "Sound effects"
+	},
+	{
+		"name": "Telephone Ring",
+		"category": "Sound effects"
+	},
+	{
+		"name": "Helicopter",
+		"category": "Sound effects"
+	},
+	{
+		"name": "Applause",
+		"category": "Sound effects"
+	},
+	{
+		"name": "Gunshot",
+		"category": "Sound effects"
+	}
+]

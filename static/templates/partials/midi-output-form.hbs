@@ -1,0 +1,64 @@
+<form class="midi-output-form">
+	<label>
+		Output device: 
+		<select class="output-selector"></select>
+	</label>
+	<fieldset>
+		<legend>Message options</legend>
+
+		<label>
+			Command:
+
+			<select class="command-type-selector"></select>
+		</label>
+		<div class="message-data-inputs-container">
+			<label class="message-field channel-field">
+				Channel:
+				<input type="number" name="channel" min="1" max="16" step="1" value="1" />
+			</label>
+			<label class="message-field note-number-field">
+				Note number:
+				<input type="number" name="note-number" min="0" max="127" step="1" />
+			</label>
+			<label class="message-field velocity-field">
+				Velocity:
+				<input type="number" name="velocity" min="0" max="127" step="1" />
+			</label>
+			<label class="message-field pressure-field">
+				Pressure:
+				<input type="number" name="pressure" min="0" max="127" step="1" />
+			</label>
+			<label class="message-field control-number-field">
+				Control number:
+				<select name="control-number" data-type="number">
+					{{#each (ControllerOptions)}}
+					<option value="{{number}}">{{name}}</option>
+					{{/each}}
+				</select>
+				<input type="number" name="control-number" min="0" max="127" step="1" />
+			</label>
+			<label class="message-field control-value-field">
+				Control value:
+				<input type="number" name="control-value" min="0" max="127" step="1" />
+			</label>
+			<label class="message-field program-number-field">
+				Program:
+				<select name="program-number" data-type="number">
+					{{#ProgramOptions}}
+						<optgroup label="{{name}}">
+							{{#programs}}
+							<option value="{{number}}">{{name}}</option>
+							{{/programs}}
+						</optgroup>
+					{{/ProgramOptions}}
+				</select>
+			</label>
+			<label class="message-field pitch-bend-field">
+				Pitch bend:
+				<input type="range" name="pitch-bend" min="-8192" max="8191" step="1" />
+			</label>
+		</div>
+	</fieldset>
+
+	<button type="submit">Send</button>
+</form>

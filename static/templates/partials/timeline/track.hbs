@@ -1,0 +1,41 @@
+<ol
+	class="track"
+	title="{{name}}"
+	data-track-number="{{track-number}}"
+>
+	{{#each events}}
+	<li
+		data-event-index="{{@index}}"
+		{{#if (Compare type '===' 'note')}}
+		class="note"
+		data-note-id="{{id}}"
+		data-note-key="{{key}}"
+		data-note-name="{{name}}"
+		data-note-velocity="{{velocity}}"
+		data-note-duration="{{duration}}"
+		data-overlapping-note-count="{{overlappingNotes.length}}"
+		data-overlapping-notes="{{Serialize overlappingNotes}}"
+		data-toggle="popover"
+		data-placement="top"
+		data-title="{{name}}"
+		data-html="true"
+		data-content="{{> note-popup}}"
+		data-trigger="hover"
+		style="left: {{Round startPercentage 4}}%; width: {{Round durationPercentage 4}}%; opacity: {{Round (Divide velocity 127) 2}}"
+		{{/if}}
+		{{#if (Compare type '===' 'program')}}
+		class="program-change"
+		data-program-number="{{programNumber}}"
+		data-program-name="{{programInfo.name}}"
+		data-program-category="{{programInfo.category}}"
+		data-toggle="popover"
+		data-placement="top"
+		data-title="Instrument changed to {{programInfo.name}}"
+		data-html="true"
+		data-content="at {{Round (Divide start 1000000) 2}}s"
+		data-trigger="hover"
+		style="left: {{Round startPercentage 4}}%;"
+		{{/if}}
+	></li>
+	{{/each}}
+</ol>

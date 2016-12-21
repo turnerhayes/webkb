@@ -1,0 +1,32 @@
+.keyboard {
+	display: flex;
+	flex-direction: row;
+	height: 4em;
+	font-size: 1.3em;
+	position: relative;
+
+	@key-border-radius: 3px;
+	
+	.key {
+		width: 1em;
+		border: 1px solid black;
+		border-bottom-left-radius: @key-border-radius;
+		border-bottom-right-radius: @key-border-radius;
+
+		@black-key-width: 0.8em;
+
+		&.black {
+			height: 60%;
+			position: absolute;
+			margin-left: -1 * (@black-key-width / 2);
+			width: @black-key-width;
+			background-color: black;
+			border-bottom-left-radius: @key-border-radius;
+			border-bottom-right-radius: @key-border-radius;
+		}
+
+		&.pressed {
+			box-shadow: 0px 0px 8px 5px #354699;
+		}
+	}
+}
