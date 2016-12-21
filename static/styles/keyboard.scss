@@ -1,0 +1,13 @@
+@import "main.scss";
+
+.keyboard__container {
+	.keyboard {
+		&__keys {
+			list-style: none;
+		}
+
+		&__key {
+			display: inline-block;
+		}
+	}
+}
