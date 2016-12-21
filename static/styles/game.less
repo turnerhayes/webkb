@@ -1,0 +1,75 @@
+.game-section {
+	@-webkit-keyframes correct-solution {
+		0% {
+			box-shadow: none;
+			// transform: scale(1);
+		}
+
+		60% {
+			box-shadow: 0px 0px 8px 5px green;
+			// transform: scale(3);
+		}
+
+		100% {
+			box-shadow: none;
+			// transform: scale(1);
+		}
+	}
+
+	@keyframes correct-solution {
+		0% {
+			box-shadow: none;
+			// transform: scale(1);
+		}
+
+		60% {
+			box-shadow: 0px 0px 8px 5px green;
+			// transform: scale(3);
+		}
+
+		100% {
+			box-shadow: none;
+			// transform: scale(1);
+		}
+	}
+
+
+	.note-list {
+		font-size: 3em;
+	}
+
+	&.correct {
+		animation: correct-solution ease 0.8s;
+	}
+
+	.note {
+		width: 2em;
+		height: 1em;
+		display: inline-block;
+		margin: 0 1em;
+
+		.circle() {
+			border: 1px solid black;
+			border-radius: 100%;
+		}
+
+		&.on {
+			.circle();
+		}
+
+		&.correct {
+			.circle();
+			box-shadow: 0px 0px 8px 5px green;
+		}
+
+		&.error {
+			.circle();
+			box-shadow: 0px 0px 8px 5px red;
+		}
+
+		&:hover {
+			.circle();
+			opacity: 0.4;
+		}
+	}
+}
