@@ -7,8 +7,10 @@ const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const hbs = require('express-hbs');
 const debug = require('debug')('webkb:app');
+const config = require('../config');
 
 const pagesRoutes = require('./routes/pages');
+const soundfontsRoutes = require('./routes/soundfonts');
 
 const app = express();
 
@@ -26,19 +28,17 @@ app.engine('hbs', hbs.express4({
 }));
 app.set('view engine', 'hbs');
 
-const IS_DEVELOPMENT = app.get('env') !== 'production';
-
-app.locals.IS_DEVELOPMENT = IS_DEVELOPMENT;
+app.locals.IS_DEVELOPMENT = config.app.isDevelopment;
 
 app.use(favicon());
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded());
 app.use(cookieParser());
-app.use(require('less-middleware')({ src: staticDir }));
-// app.use('/static/', express.static(distDir));
 
-if (IS_DEVELOPMENT) {
+
+// In development, we will use the webpack middleware
+if (config.app.isDevelopment) {
 	const webpack = require('webpack');
 	const webpackDevMiddleware = require('webpack-dev-middleware');
 	const webpackHotMiddleware = require('webpack-hot-middleware');
@@ -50,11 +50,12 @@ if (IS_DEVELOPMENT) {
 		webpackConfig.entry,
 		(entry, key) => {
 			if (_.isString(entry)) {
-				entry = [entry];
-				webpackConfig.entry[key] = entry;
+				webpackConfig.entry[key] = entry = [entry];
 			}
 
 			entry.push(hotMiddlewareScript);
+
+			entry.unshift('react-hot-loader/patch');
 		}
 	);
 
@@ -79,8 +80,23 @@ if (IS_DEVELOPMENT) {
 
 	app.use(webpackHotMiddleware(compiler));
 }
+// In production, serve resources pre-built by webpack
+else {
+	app.use('/static/', express.static(distDir));
+}
+
+app.use(
+	'/static/fonts/font-awesome',
+	express.static(
+		path.resolve(__dirname, '..', 'node_modules', 'font-awesome', 'fonts'),
+		{
+			fallthrough: false
+		}
+	)
+);
 
 app.use('/', pagesRoutes);
+app.use('/soundfonts/', soundfontsRoutes);
 
 /// catch 404 and forwarding to error handler
 app.use(function(req, res, next) {
@@ -95,7 +111,7 @@ app.use(function(err, req, res, next) {
 	res.status(err.status || 500);
 	res.render('error', {
 		message: err.message,
-		error: IS_DEVELOPMENT ? err : {}
+		error: config.app.isDevelopment ? err : {}
 	});
 });
 

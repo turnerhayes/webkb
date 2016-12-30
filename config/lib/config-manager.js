@@ -7,11 +7,21 @@ class ConfigManager {
 
 		const paths = {};
 
+		const app = {};
+
+		const environment = process.env.NODE_ENV || "development";
+
 		Object.defineProperties(this, {
 			paths: {
 				enumerable: true,
 				configurable: true,
 				value: paths
+			},
+
+			app: {
+				enumerable: true,
+				configurable: true,
+				value: app
 			}
 		});
 
@@ -26,6 +36,23 @@ class ConfigManager {
 
 				return props;
 			}, {})
+		);
+
+		Object.defineProperties(
+			app,
+			{
+				environment: {
+					enumerable: true,
+					configurable: true,
+					value: environment
+				},
+
+				isDevelopment: {
+					enumerable: true,
+					configurable: true,
+					value: environment === 'development'
+				}
+			}
 		);
 	}
 }

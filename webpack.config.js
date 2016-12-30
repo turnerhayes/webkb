@@ -45,10 +45,51 @@ module.exports = {
 			},
 
 			{
-				test: /\.scss$/,
-				loader: ExtractTextPlugin.extract('css!postcss!sass-loader-once', {
+				test: /\.less$/,
+				loader: ExtractTextPlugin.extract(
+					'css-loader?sourceMap!postcss-loader!less-loader?' +
+						JSON.stringify({
+							sourceMap: true,
+							modifyVars: {
+								'fa-font-path': '"/static/fonts/font-awesome/"'
+							}
+						}),
+					{
+						publicPath: '/static/css'
+					}
+				)
+			},
+
+			{
+				test: /\.css$/,
+				loader: ExtractTextPlugin.extract('css-loader?sourceMap!postcss', {
 					publicPath: '/static/css'
 				})
+			},
+
+			{
+				test: /\.json$/,
+				loader: 'json-loader'
+			},
+
+			{
+				test: /\.woff(2)?(\?.*)?$/,
+				loader: 'url-loader?limit=10000&mimetype=application/font-woff'
+			},
+
+			{
+				test: /\.ttf(\?.*)?$/,
+				loader: 'file-loader'
+			},
+
+			{
+				test: /\.eot(\?.*)?$/,
+				loader: 'file-loader'
+			},
+
+			{
+				test: /\.svg(\?.*)?$/,
+				loader: 'file-loader'
 			}
 		]
 	},
@@ -58,6 +99,19 @@ module.exports = {
 			"React": "react"
 		}),
 
+		// jQuery and Tether required by Bootstrap
+		new webpack.ProvidePlugin({
+			"jQuery": "jquery",
+			"$": "jquery"
+		}),
+
+		new webpack.ProvidePlugin({
+			"Tether": "tether"
+		}),
+
+		new webpack.DefinePlugin({
+			"IS_DEVELOPMENT": JSON.stringify(config.app.isDevelopment),
+		}),
 
         new ExtractTextPlugin('css/[name].bundle.css', {
             allChunks: true
@@ -65,9 +119,20 @@ module.exports = {
 	],
 
 	resolve: {
-		extensions: ['', '.js', '.jsx', '.scss', '.css'],
-		root: [config.paths.static, path.join(config.paths.static, 'styles')]
+		extensions: ['', '.js', '.jsx', '.json', '.less', '.css'],
+		root: [
+			config.paths.static,
+			path.join(config.paths.static, 'styles')
+		]
 	},
 
-	devtool: "source-map"
+	node: {
+		Buffer: true,
+		fs: 'empty',
+		assert: true,
+		events: true
+	},
+
+	// devtool: "source-map"
+	devtool: "cheap-eval-source-map"
 };

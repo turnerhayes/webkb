@@ -1,11 +1,14 @@
 import { render } from "react-dom";
 import App from "../components/App";
-import Keyboard from "../components/Keyboard";
-import "main.scss";
+import PlayFileComponent from "../components/PlayFile";
 
 render(
 	<App>
-		<Keyboard />
+		<PlayFileComponent />
 	</App>,
 	document.getElementById('app')
 );
+
+if (module.hot) {
+	module.hot.accept();
+}

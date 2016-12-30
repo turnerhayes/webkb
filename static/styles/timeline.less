@@ -1,0 +1,50 @@
+.timeline {
+	.window-range-label {
+		input {
+			display: inline-block;
+			width: 5em;
+		}
+	}
+
+	.timeline-container {
+		position: relative;
+		margin: 0 5px;
+	}
+
+	.window-marker {
+		width: 0;
+		height: 100%;
+		position: absolute;
+		border-left: 2px solid black;
+		top: 0;
+
+		&::before {
+			@arrow-width: 10px;
+			@arrow-height: 10px;
+
+			content: "";
+			width: 0;
+			height: 0;
+			border-style: solid;
+			border-width: @arrow-height (@arrow-width / 2) 0 (@arrow-width / 2);
+			border-color: black transparent transparent transparent;
+			position: absolute;
+			top: 0;
+			left: -(@arrow-width / 2) - 1;
+		}
+
+		&.window-start-marker {
+			left: 0;
+		}
+
+		&.window-end-marker {
+			left: 100%;
+		}
+	}
+
+	.track {
+		&:nth-child(2n) {
+			background-color: lightblue;
+		}
+	}
+}

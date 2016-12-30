@@ -3,6 +3,7 @@ const path = require('path');
 const fs = require('fs');
 const express = require('express');
 const config = require('../../config/lib/config-manager');
+const pageTitles = require('./utils/page-titles');
 const router = express.Router();
 
 
@@ -26,6 +27,7 @@ _.each(
 				.get(
 					function(req, res) {
 						res.render('page', {
+							title: pageTitles[bundleName],
 							req: req,
 							bundleName: bundleName
 						});

@@ -1,0 +1,54 @@
+.timeline .track {
+	list-style-type: none;
+	padding-left: 0;
+	height: 5em;
+	position: relative;
+
+	.note {
+		@note-height: 10px;
+
+		display: inline-block;
+		position: absolute;
+		top: 0;
+		border: 1px solid black;
+		background-color: black;
+		border-radius: 100%;
+		height: @note-height;
+
+		&[data-overlapping-note-count="1"] {
+			top: @note-height;
+		}
+
+		&[data-overlapping-note-count="2"] {
+			top: 2 * @note-height;
+		}
+
+		&[data-overlapping-note-count="3"] {
+			top: 3 * @note-height;
+		}
+
+		&[data-overlapping-note-count="4"] {
+			top: 4 * @note-height;
+		}
+
+		&[data-overlapping-note-count="5"] {
+			top: 5 * @note-height;
+		}
+
+		&[data-overlapping-note-count="6"] {
+			top: 6 * @note-height;
+		}
+
+		&[data-overlapping-note-count="7"] {
+			top: 7 * @note-height;
+		}
+	}
+
+	.program-change {
+		height: 100%;
+		border-left: 2px solid black;
+		width: 0px;
+		display: inline-block;
+		position: absolute;
+	}
+}

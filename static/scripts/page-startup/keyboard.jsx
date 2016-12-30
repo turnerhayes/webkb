@@ -1,9 +1,10 @@
 import { render } from "react-dom";
 import App from "../components/App";
+import Keyboard from "../components/Keyboard";
 
 render(
 	<App>
-		<h3>WebKB</h3>
+		<Keyboard />
 	</App>,
 	document.getElementById('app')
 );

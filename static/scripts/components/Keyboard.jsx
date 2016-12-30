@@ -1,6 +1,6 @@
 import React from "react";
 import _ from "lodash";
-import "keyboard.scss";
+import "keyboard.less";
 
 class Keyboard extends React.Component {
 	render() {
