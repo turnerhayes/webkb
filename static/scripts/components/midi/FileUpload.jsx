@@ -7,6 +7,10 @@ class MIDIFileUpload extends React.Component {
 		onFileChosen: React.PropTypes.func
 	}
 
+	state = {
+		chosenFileName: null
+	}
+
 	handleMIDIFileUpload(acceptedFiles) {
 		if (acceptedFiles.length) {
 			const reader = new FileReader();
@@ -22,6 +26,11 @@ class MIDIFileUpload extends React.Component {
 			};
 
 			reader.readAsArrayBuffer(acceptedFiles[0]);
+
+			this.setState({chosenFileName: acceptedFiles[0].name});
+		}
+		else {
+			this.setState({chosenFileName: null});
 		}
 	}
 
@@ -32,7 +41,7 @@ class MIDIFileUpload extends React.Component {
 				accept="audio/midi"
 				disablePreview
 			>
-				<div>Drop a MIDI file here or click to open a file chooser.</div>
+				<div>{this.state.chosenFileName || "Drop a MIDI file here or click to open a file chooser."}</div>
 			</Dropzone>
 		);
 	}

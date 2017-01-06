@@ -220,20 +220,20 @@ function _parseChannelEvent(eventByte, reader) {
 }
 
 function _readTrackChunk(reader) {
-	let length = reader.nextUInt32BE();
+	const length = reader.nextUInt32BE();
 
-	let events = [];
+	const events = [];
 
-	let initialPosition = reader.tell();
+	const initialPosition = reader.tell();
 
 	let runningStatus;
 
-	let chunkBuffer = reader.nextBuffer(length);
+	const chunkBuffer = reader.nextBuffer(length);
 
-	let chunkReader = new BufferReader(chunkBuffer);
+	const chunkReader = new BufferReader(chunkBuffer);
 
 	while (chunkReader.tell() < length) {
-		let eventChunk = _readEvent(chunkReader, runningStatus);
+		const eventChunk = _readEvent(chunkReader, runningStatus);
 
 		runningStatus = eventChunk.runningStatus;
 
@@ -244,7 +244,7 @@ function _readTrackChunk(reader) {
 
 	if (chunkReader.tell() < length) {
 		// there are still bytes left unread--something has gone wrong
-		let err = new Error('Chunk buffer was not exhausted; ' + (length - chunkReader.tell()) + ' bytes left');
+		const err = new Error('Chunk buffer was not exhausted; ' + (length - chunkReader.tell()) + ' bytes left');
 
 		err.remainingBytes = chunkReader.restAll();
 

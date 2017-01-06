@@ -1,7 +1,7 @@
 "use strict";
 
-const _     = require('lodash');
-const Track = require('./midi-file/track');
+import _ from "lodash";
+import Track from "./midi-file/track";
 
 
 const FILE_FORMAT = {
@@ -48,13 +48,9 @@ function _setOffsets(args) {
 }
 
 exports = module.exports = class MIDIFile {
-	static get FILE_FORMAT() {
-		return FILE_FORMAT;
-	}
+	static FILE_FORMAT = FILE_FORMAT
 
-	static get DIVISION_TYPE() {
-		return DIVISION_TYPE;
-	}
+	static DIVISION_TYPE = DIVISION_TYPE
 
 	constructor(args) {
 		let file = this;
@@ -69,21 +65,25 @@ exports = module.exports = class MIDIFile {
 			{
 				numberOfTracks: {
 					enumerable: true,
+					configurable: true,
 					value: args.header.numberOfTracks,
 				},
 
 				_header: {
 					enumerable: true,
+					configurable: true,
 					value: args.header,
 				},
 
 				tracks: {
 					enumerable: true,
+					configurable: true,
 					value: args.tracks.map(Track.create),
 				},
 
 				duration: {
 					enumerable: true,
+					configurable: true,
 					value: fileDurationMilliseconds,
 				}
 			}

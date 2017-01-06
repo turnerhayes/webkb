@@ -26,6 +26,7 @@ class PlayFileComponent extends React.Component {
 					onPlay={() => this.setState({isPlaying: true})}
 					onPause={() => this.setState({isPlaying: false})}
 					isPlaying={this.state.isPlaying}
+					destinationId={this.state.midiOutputId}
 				/>
 			</div>
 		);

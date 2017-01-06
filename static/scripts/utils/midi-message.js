@@ -5,7 +5,7 @@ const COMMAND_TYPES = {
 	NoteOff: 0x8,
 	NoteOn: 0x9,
 	PolyphonicKeyPressure: 0xA,
-	ControlChange: 0xB,
+	ControllerChange: 0xB,
 	ProgramChange: 0xC,
 	ChannelPressure: 0xD,
 	PitchBend: 0xE
@@ -15,13 +15,9 @@ const COMMAND_TYPE_NAMES = _.invert(COMMAND_TYPES);
 
 
 export default class MIDIMessage {
-	static get Types() {
-		return COMMAND_TYPES;
-	}
+	static Types = COMMAND_TYPES
 
-	static get CommandNames() {
-		return COMMAND_TYPE_NAMES;
-	}
+	static CommandNames = COMMAND_TYPE_NAMES
 
 	static isChannelCommand(commandType) {
 		return 0x8 <= commandType <= 0xE;

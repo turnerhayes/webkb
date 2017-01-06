@@ -1,5 +1,6 @@
 const path = require('path');
-const fs = require('fs');
+const Promise = require('bluebird');
+const fs = Promise.promisifyAll(require('fs'));
 const _ = require('lodash');
 const express = require('express');
 const JSZip = require('jszip');
@@ -8,70 +9,223 @@ const router = express.Router();
 
 const soundfontPath = path.resolve(__dirname, '..', '..', 'soundfonts', 'FluidR3_GM');
 
+const flatRegex = /^([A-Z])b(\d)$/;
+const noteNameList = ['A', 'B', 'C', 'D', 'E', 'F', 'G'];
+
+function getSharpsFromFlat(flat) {
+	const matches = flatRegex.exec(flat);
+
+	if (matches) {
+		const noteName = matches[1].toUpperCase();
+		let octaveNumber = Number(matches[2]);
+		const noteIndex = noteNameList.indexOf(noteName);
+		const nextNoteIndex = (noteIndex + 1) % 12;
+
+		const nextNote = noteNameList[nextNoteIndex];
+		if (nextNoteIndex < noteIndex) {
+			octaveNumber += 1;
+		}
+
+		return [
+			nextNote + '#' + octaveNumber,
+			nextNote + '♯' + octaveNumber
+		];
+	}
+	else {
+		return [];
+	}
+}
+
+const validNoteMapPromise = fs.readdirAsync(soundfontPath).then(
+	files => {
+		const instrumentNotes = {};
+
+		return Promise.all(
+			files.map(
+				file => {
+					const instrumentPath = path.join(soundfontPath, file);
+					return fs.statAsync(instrumentPath).then(
+						stat => {
+							if (!stat.isDirectory()) {
+								return;
+							}
+
+							const instrumentName = file.replace(/-mp3$/, '');
+
+							instrumentNotes[instrumentName] = {};
+
+							return fs.readdirAsync(instrumentPath).then(
+								files => files.forEach(
+									file => {
+										if (!/\.mp3$/.test(file)) {
+											return;
+										}
+
+										const note = file.replace(/\.mp3$/, '');
+
+										const notePath = path.join(instrumentPath, file);
+
+										instrumentNotes[instrumentName][note] = notePath;
+
+										getSharpsFromFlat(note).forEach(
+											sharp => instrumentNotes[instrumentName][sharp] = notePath
+										);
+									}
+								)
+							);
+						}
+					)
+				}
+			)
+		).then(() => instrumentNotes);
+	}
+);
+
+
+
+function instrumentNameToFolderName(instrumentName) {
+	return instrumentName.toLowerCase().replace(/[\(\)]/g, '').replace(/-/g, '').replace(/\W+/g, '_');
+}
+
+
+const sharpNoteRegex = /^([a-g])[#♯](\d+)$/i;
+
+function normalizeNotes(notes) {
+	if (!notes) {
+		return notes;
+	}
+
+	return notes.map(
+		note => {
+			// Transform sharp into flat
+			const matches = sharpNoteRegex.exec(note);
+
+			if (matches) {
+				const note = matches[1].toUpperCase();
+				const octaveNumber = Number(matches[2]);
+				const originalNoteIndex = noteNameList.indexOf(note);
+
+				const nextNoteIndex = (originalNoteIndex + 1) % noteNameList.length;
+
+				return noteNameList[nextNoteIndex] + 'b' +
+					(nextNoteIndex < originalNoteIndex ? (octaveNumber + 1) : octaveNumber);
+			}
+
+			return note;
+		}
+	);
+}
+
+function findInvalidNotes(notes) {
+	const invalidNotes = {};
+
+	return validNoteMapPromise.then(
+		validNotes => {
+			notes.forEach(
+				instrument => {
+					if (!validNotes[instrument]) {
+						invalidNotes[instrument] = notes[instrument];
+					}
+				}
+			);
+
+			return invalidNotes;
+		}
+	);
+}
+
+function generateZip(instrumentMap) {
+	const zip = new JSZip();
+
+	return Promise.all(
+		_.map(
+			instrumentMap,
+			(notes, instrument) => {
+				const normalizedNoteMap = normalizeNotes(notes);
+				const instrumentPath = path.join(soundfontPath, instrumentNameToFolderName(instrument) + '-mp3');
+
+				return fs.readdirAsync(instrumentPath)
+					.then(
+						files => {
+							for (let i = 0, len = files.length; i < len; i++) {
+								const filename = files[i];
+
+								if (notes && notes.length) {
+									const noteName = path.basename(filename, '.mp3');
+
+									if (!_.includes(normalizedNotes, noteName)) {
+										continue;
+									}
+								}
+
+								const filePath = path.join(instrumentPath, filename);
+
+								zip.file(
+									instrument + '/' + filename,
+									fs.readFileSync(filePath),
+									{
+										binary: true,
+										date: fs.statSync(filePath).mtime
+									}
+								);
+							}
+						}
+					)
+			}
+		)
+	).then(
+		() => zip.generateAsync({type: 'nodebuffer'})
+	)
+}
+
+router.route('/instruments')
+	.get(function(req, res, next) {
+		const instruments = req.query.instruments.split(',');
+		const notes = req.query.notes ? req.query.notes.split(',') : undefined;
+
+		generateZip(
+			instruments.reduce(
+				(map, instrument) => {
+					map[instrument] = notes;
+
+					return map;
+				},
+				{}
+			)
+		).then(
+			result => {
+				res.type('application/zip').send(result);
+			}
+		).catch(
+			ex => next(ex)
+		);
+	})
+	.post(function(req, res, next) {
+		const instrumentMap = req.body;
+
+		generateZip(instrumentMap).then(
+			result => res.type('application/zip').send(result)
+		).catch(ex => next(ex));
+	});
+
 router.route('/:instrument')
 	.get(function(req, res, next) {
 		const instrumentName = req.param('instrument');
-		let notes;
+		const notes = req.query.notes ? req.query.notes.split(',') : undefined;
 
-		if (req.query.notes) {
-			notes = req.query.notes;
-			if (!_.isArray(notes)) {
-				notes = [notes];
+		const instrumentMap = {};
+
+		instrumentMap[instrumentName] = notes;
+
+		generateZip(instrumentMap).then(
+			function(result) {
+				res.type('application/zip').send(result);
 			}
-
-			notes = notes.map(
-				function(noteName) {
-					return noteName.toUpperCase();
-				}
-			);
-		}
-
-		const zip = new JSZip();
-
-		const instrumentPath = path.join(soundfontPath, instrumentName + '-mp3');
-
-		fs.readdir(instrumentPath, function(err, files) {
-			if (err) {
-				next(err);
-				return;
+		).catch(
+			function(ex) {
+				next(ex);
 			}
-
-			for (let i = 0, len = files.length; i < len; i++) {
-				const filename = files[i];
-
-				if (notes && notes.length) {
-					const noteName = path.basename(filename, '.mp3').toUpperCase();
-
-					if (!_.includes(notes, noteName)) {
-						continue;
-					}
-				}
-
-				try {
-					const filePath = path.join(instrumentPath, filename);
-					zip.file(
-						instrumentName + '/' + filename,
-						fs.readFileSync(filePath),
-						{
-							binary: true,
-							date: fs.statSync(filePath).mtime
-						}
-					);
-				}
-				catch (ex) {
-					next(ex);
-					return;
-				}
-			}
-
-			zip.generateAsync({type: 'nodebuffer'}).then(
-				function(result) {
-					res.type('application/zip');
-
-					res.send(result);
-				}
-			);
-		});
+		);
 	});
 
 module.exports = router;

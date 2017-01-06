@@ -1,29 +1,29 @@
 import EventEmitter from 'events';
 import assert       from 'assert';
 import _            from 'lodash';
-import Q            from "q";
+import Promise      from "bluebird";
 import MIDIMessage  from "./midi-message";
 
 function _requestMIDIAccess() {
-	var deferred = Q.defer();
-
-	if (navigator.requestMIDIAccess) {
-		navigator.requestMIDIAccess({
-			sysex: false
-		}).then(
-			function(access) {
-				deferred.resolve(access);
-			},
-			function(ex) {
-				deferred.reject(ex);
+	return new Promise(
+		(resolve, reject) => {
+			if (navigator.requestMIDIAccess) {
+				navigator.requestMIDIAccess({
+					sysex: false
+				}).then(
+					function(access) {
+						resolve(access);
+					},
+					function(ex) {
+						reject(ex);
+					}
+				);
 			}
-		);
-	}
-	else {
-		deferred.reject();
-	}
-
-	return deferred.promise;
+			else {
+				reject();
+			}
+		}
+	);
 }
 
 
@@ -48,8 +48,24 @@ class MIDIListener extends EventEmitter {
 		return this._MIDIAccess.outputs.values();
 	}
 
+	sendEvent(outputs, event) {
+		return this.send(
+			outputs,
+			event.name,
+			event,
+			event.deltaTime
+		);
+	}
+
 	send(outputs, commandType, commandArgs, deltaTime) {
-		assert(_.includes(_.values(MIDIMessage.Types), commandType), 'Command type ' + commandType + ' is not a known command');
+		if (commandArgs.type === 'meta') {
+			// TODO: handle meta events
+			return;
+		}
+
+		assert(commandType in MIDIMessage.Types, 'Command type ' + commandType + ' is not a known command');
+
+		const commandTypeNumber = MIDIMessage.Types[commandType];
 
 		if (_.isUndefined(outputs)) {
 			outputs = Array.from(this.outputs);
@@ -87,32 +103,39 @@ class MIDIListener extends EventEmitter {
 
 		const data = [];
 
-		if (MIDIMessage.isChannelCommand(commandType)) {
+		if (MIDIMessage.isChannelCommand(commandTypeNumber)) {
 			assert('channel' in commandArgs, 'Any channel command must specify its channel');
-			data.push(((commandType << 4) | (commandArgs.channel - 1)));
+			data.push(((commandTypeNumber << 4) | commandArgs.channel));
 		}
 		else {
-			data.push(commandType);
+			data.push(commandTypeNumber);
 		}
 
-		switch (commandType) {
+		switch (MIDIMessage.Types[commandType]) {
 			case MIDIMessage.Types.NoteOff:
 			case MIDIMessage.Types.NoteOn:
-				assert('note' in commandArgs, 'note required');
+				assert('key' in commandArgs, 'key required');
 				assert('velocity' in commandArgs, 'velocity required');
-				data.push(commandArgs.note);
+				data.push(commandArgs.key);
 				data.push(commandArgs.velocity);
 				break;
 
 			case MIDIMessage.Types.PitchBend:
-				assert('pitch-bend' in commandArgs, 'pitch-bend required');
-				const bend = commandArgs.bend + 0x2000;
-				data.push(bend & 0xF, (bend >> 7) | 0xF);
+				assert('bend' in commandArgs, 'bend required');
+				// const bend = commandArgs.bend + 0x2000;
+				data.push(commandArgs.bend & 0xF, (commandArgs.bend >> 7) & 0xF);
 				break;
 
 			case MIDIMessage.Types.ProgramChange:
 				assert('program' in commandArgs, 'program required');
 				data.push(commandArgs.program);
+				break;
+
+			case MIDIMessage.Types.ControllerChange:
+				assert('controllerNumber' in commandArgs, 'controllerNumber required');
+				assert('controllerValue' in commandArgs, 'controllerValue required');
+				data.push(commandArgs.controllerNumber);
+				data.push(commandArgs.controllerValue);
 				break;
 		}
 
@@ -123,7 +146,7 @@ class MIDIListener extends EventEmitter {
 		// jshint validthis:true
 		let message = MIDIMessage.parse(msg.data);
 
-		message.source = _getDeviceInfo(msg.target);
+		message.source = this._getDeviceInfo(msg.target);
 
 		switch (message.command.type) {
 			case MIDIMessage.Types.NoteOff:

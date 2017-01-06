@@ -1,8 +1,9 @@
 "use strict";
 
-let _            = require('lodash');
-let assert       = require('assert');
-let MIDIPrograms = require('../../midi-programs');
+import _ from "lodash";
+import assert from "assert";
+import MIDIPrograms from "../../midi-programs";
+import MIDINotes from "../../notes";
 
 const META_TEXT_EVENT_NAMES = [
 	'Text',
@@ -26,162 +27,6 @@ const MESSAGE_TYPE_NAMES_TO_NUMBERS = {
 
 
 const MESSAGE_TYPE_NUMBERS_TO_NAMES = _.invert(MESSAGE_TYPE_NAMES_TO_NUMBERS);
-
-
-const KEY_NUMBER_TO_NAME = [
-	// 1st octave
-	'C',
-	'C♯',
-	'D',
-	'D♯',
-	'E',
-	'F',
-	'F♯',
-	'G',
-	'G♯',
-	'A',
-	'A♯',
-	'B',
-	// 2nd octave
-	'C',
-	'C♯',
-	'D',
-	'D♯',
-	'E',
-	'F',
-	'F♯',
-	'G',
-	'G♯',
-	'A',
-	'A♯',
-	'B',
-	// 3rd octave 
-	'C',
-	'C♯',
-	'D',
-	'D♯',
-	'E',
-	'F',
-	'F♯',
-	'G',
-	'G♯',
-	'A',
-	'A♯',
-	'B',
-	// 4th octave
-	'C',
-	'C♯',
-	'D',
-	'D♯',
-	'E',
-	'F',
-	'F♯',
-	'G',
-	'G♯',
-	'A',
-	'A♯',
-	'B',
-	// 5th octave
-	'C',
-	'C♯',
-	'D',
-	'D♯',
-	'E',
-	'F',
-	'F♯',
-	'G',
-	'G♯',
-	'A',
-	'A♯',
-	'B',
-	// 6th octave
-	'C',
-	'C♯',
-	'D',
-	'D♯',
-	'E',
-	'F',
-	'F♯',
-	'G',
-	'G♯',
-	'A',
-	'A♯',
-	'B',
-	// 7th octave
-	'C',
-	'C♯',
-	'D',
-	'D♯',
-	'E',
-	'F',
-	'F♯',
-	'G',
-	'G♯',
-	'A',
-	'A♯',
-	'B',
-	// 8th octave
-	'C',
-	'C♯',
-	'D',
-	'D♯',
-	'E',
-	'F',
-	'F♯',
-	'G',
-	'G♯',
-	'A',
-	'A♯',
-	'B',
-	// 9th octave
-	'C',
-	'C♯',
-	'D',
-	'D♯',
-	'E',
-	'F',
-	'F♯',
-	'G',
-	'G♯',
-	'A',
-	'A♯',
-	'B',
-	// 10th octave
-	'C',
-	'C♯',
-	'D',
-	'D♯',
-	'E',
-	'F',
-	'F♯',
-	'G',
-	'G♯',
-	'A',
-	'A♯',
-	'B',
-	// 11th octave
-	'C',
-	'C♯',
-	'D',
-	'D♯',
-	'E',
-	'F',
-	'F♯',
-	'G',
-	'G♯',
-	'A',
-	'A♯',
-	'B',
-	// 12th octave
-	'C',
-	'C♯',
-	'D',
-	'D♯',
-	'E',
-	'F',
-	'F♯',
-	'G',
-];
 
 
 function _toVariableLength(value) {
@@ -243,17 +88,11 @@ function _validateEvent(args) {
 }
 
 class MIDIEvent {
-	static get META_TEXT_EVENT_NAMES() {
-		return META_TEXT_EVENT_NAMES;
-	}
+	static META_TEXT_EVENT_NAMES = META_TEXT_EVENT_NAMES
 
-	static get MESSAGE_TYPE_NUMBERS_TO_NAMES() {
-		return MESSAGE_TYPE_NUMBERS_TO_NAMES;
-	}
+	static MESSAGE_TYPE_NUMBERS_TO_NAMES = MESSAGE_TYPE_NUMBERS_TO_NAMES
 
-	static get MESSAGE_TYPE_NAMES_TO_NUMBERS() {
-		return MESSAGE_TYPE_NAMES_TO_NUMBERS;
-	}
+	static MESSAGE_TYPE_NAMES_TO_NUMBERS = MESSAGE_TYPE_NAMES_TO_NUMBERS
 
 	constructor(args) {
 		_validateEvent(args);
@@ -287,7 +126,7 @@ class MIDIEvent {
 			else if (args.name === 'NoteOn' || args.name === 'NoteOff') {
 				props.keyName = {
 					enumerable: true,
-					value: KEY_NUMBER_TO_NAME[args.key],
+					value: MIDINotes[args.key],
 				};
 			}
 		}
