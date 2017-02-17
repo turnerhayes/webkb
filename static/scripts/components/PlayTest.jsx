@@ -14,42 +14,21 @@ class PlayTest extends React.Component {
 				instrument: 'Acoustic Grand Piano',
 				noteName: 'Gb3',
 				startAt: 0,
-				duration: 7
+				duration: 7,
+				volume: 100
 			},
 			{
 				instrument: 'Flute',
 				noteName: 'A2',
 				startAt: 0.3,
-				duration: 10
+				duration: 10,
+				volume: 100
 			},
 		],
 		isPlaying: false
 	}
 
 	plan = new AudioPlayPlan()
-
-	setNotes() {
-		Soundfont.getNotes({
-			accordion: ['G6'],
-			flute: ['Gb3']
-		}).done(
-			notes => {
-				this.plan.addNote({
-					buffer: notes.accordion.G6,
-					startAt: 2e6,
-					duration: 10e6
-				});
-
-				this.plan.addNote({
-					buffer: notes.flute.Gb3,
-					startAt: 0.5 * 1e6,
-					duration: 20e6
-				});
-
-				this.plan.run();
-			}
-		);
-	}
 
 	handleFormSubmit(event) {
 		event.preventDefault();
@@ -59,7 +38,8 @@ class PlayTest extends React.Component {
 		this.setState({
 			noteList: this.state.noteList.concat([{
 				startAt: 0,
-				duration: 1
+				duration: 1,
+				volume: 100
 			}])
 		});
 	}
@@ -120,7 +100,8 @@ class PlayTest extends React.Component {
 								{},
 								note,
 								{
-									buffer: fetchedNotes[note.instrument][note.noteName]
+									buffer: fetchedNotes[note.instrument][note.noteName],
+									volume: note.volume / 100
 								}
 							)
 						);
@@ -139,54 +120,72 @@ class PlayTest extends React.Component {
 	renderNoteForm(note, noteIndex) {
 		return (
 			<div className="note-form form-inline" data-note-index={noteIndex}>
-				<select
-					name="instrument"
-					className="form-control"
-					value={note.instrument}
-					onChange={(event) => this.handleNotePropertyChanged(event, 'instrument', noteIndex)}
-				>
-					{
-						MIDIPrograms.map(
-							(program, index) => (
-								<option
-									key={index}
-									value={program.name}
-								>{program.name}</option>
+				<div className="form-group form-inline">
+					<select
+						name="instrument"
+						className="form-control"
+						defaultValue={note.instrument}
+						onChange={event => this.handleNotePropertyChanged(event, 'instrument', noteIndex)}
+					>
+						{
+							MIDIPrograms.map(
+								(program, index) => (
+									<option
+										key={index}
+										value={program.name}
+									>{program.name}</option>
+								)
 							)
-						)
-					}
-				</select>
-				<input
-					type="text"
-					list="note-name-list"
-					name="note-name"
-					className="form-control"
-					required
-					defaultValue={this.state.noteList[noteIndex].noteName}
-					onChange={(event) => this.handleNotePropertyChanged(event, 'noteName', noteIndex)}
-				/>
-				<label>
-					Start at
+						}
+					</select>
 					<input
-						type="number"
-						name="start-time"
-						step="0.0001"
+						type="text"
+						list="note-name-list"
+						name="note-name"
 						className="form-control"
-						defaultValue={this.state.noteList[noteIndex].startAt}
-						onChange={(event) => this.handleNotePropertyChanged(event, 'startAt', noteIndex, Number)}
-					/>s
-				</label>
-				<label>
-					 for 
-					<input
-						type="number"
-						name="duration"
-						step="0.0001"
-						className="form-control"
-						defaultValue={this.state.noteList[noteIndex].duration}
-						onChange={(event) => this.handleNotePropertyChanged(event, 'duration', noteIndex, Number)}
-					/>s
-				</label>
+						required
+						defaultValue={this.state.noteList[noteIndex].noteName}
+						onChange={event => this.handleNotePropertyChanged(event, 'noteName', noteIndex)}
+					/>
+				</div>
+				<div className="form-group form-inline">
+					<label>
+						Start at
+						<input
+							type="number"
+							name="start-time"
+							step="0.0001"
+							className="form-control"
+							defaultValue={this.state.noteList[noteIndex].startAt}
+							onChange={event => this.handleNotePropertyChanged(event, 'startAt', noteIndex, Number)}
+						/>s
+					</label>
+					<label>
+						 for 
+						<input
+							type="number"
+							name="duration"
+							step="0.0001"
+							className="form-control"
+							defaultValue={this.state.noteList[noteIndex].duration}
+							onChange={event => this.handleNotePropertyChanged(event, 'duration', noteIndex, Number)}
+						/>s
+					</label>
+				</div>
+				<div className="form-group form-inline">
+					<label>
+						Volume
+						<input
+							type="number"
+							name="volume"
+							min="0"
+							max="100"
+							step="1"
+							defaultValue={this.state.noteList[noteIndex].volume}
+							onChange={event => this.handleNotePropertyChanged(event, 'volume', noteIndex, Number)}
+						/>%
+					</label>
+				</div>
 				<button
 					type="button"
 					className="btn fa fa-play"

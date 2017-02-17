@@ -1,4 +1,4 @@
 {
 	"verbose": true,
-	"ignore": ["soundfonts", "static"]
+	"ignore": ["soundfonts", "static", "tools"]
 }

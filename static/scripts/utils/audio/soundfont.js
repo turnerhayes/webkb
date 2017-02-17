@@ -21,6 +21,21 @@ function _getUncachedNotes(instrumentNotes) {
 	);
 }
 
+function getFiles(notes) {
+	return axios(
+		{
+			url: '/soundfonts/instruments',
+			method: 'post',
+			responseType: 'arraybuffer',
+			data: {
+				notes: notes
+			}
+		}
+	).then(
+		response => JSZip.loadAsync(response.data)
+	).catch(ex => Q.reject(ex.invalidNotes));
+}
+
 class Soundfont {
 	static _cache = {};
 
@@ -32,26 +47,17 @@ class Soundfont {
 		return Q(
 			_.isEmpty(uncachedNotes) ?
 				undefined :
-				axios(
-					{
-						url: '/soundfonts/instruments',
-						method: 'post',
-						responseType: 'arraybuffer',
-						data: uncachedNotes
-					}
-				).then(
-					response => JSZip.loadAsync(response.data)
-				).then(
-					result => {
+				getFiles(uncachedNotes).then(
+					zip => {
 						const promises = [];
 
 						// Iterate over all items that end in a / --that is all folders, no files
-						result.folder(/\/$/).forEach(
+						zip.folder(/\/$/).forEach(
 							folder => {
 								const instrumentName = folder.name.replace(/\/$/, '');
 								Soundfont._cache[instrumentName] = Soundfont._cache[instrumentName] || {};
 
-								result.folder(instrumentName).forEach(
+								zip.folder(instrumentName).forEach(
 									(relativePath, fileObj) => {
 										promises.push(fileObj.async('arraybuffer')
 											.then(

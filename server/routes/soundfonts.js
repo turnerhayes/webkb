@@ -19,7 +19,7 @@ function getSharpsFromFlat(flat) {
 		const noteName = matches[1].toUpperCase();
 		let octaveNumber = Number(matches[2]);
 		const noteIndex = noteNameList.indexOf(noteName);
-		const nextNoteIndex = (noteIndex + 1) % 12;
+		const nextNoteIndex = (noteIndex + 1) % noteNameList.length;
 
 		const nextNote = noteNameList[nextNoteIndex];
 		if (nextNoteIndex < noteIndex) {
@@ -121,11 +121,29 @@ function findInvalidNotes(notes) {
 
 	return validNoteMapPromise.then(
 		validNotes => {
-			notes.forEach(
-				instrument => {
-					if (!validNotes[instrument]) {
-						invalidNotes[instrument] = notes[instrument];
+			// console.log('valid notes:', validNotes);
+			// console.log('notes to check: ', notes);
+			_.each(
+				notes,
+				(instrumentNotes, instrument) => {
+					const instrumentFolder = instrumentNameToFolderName(instrument);
+
+					if (!(instrumentFolder in validNotes)) {
+						console.log(instrument + ' is not a valid instrument');
+						invalidNotes[instrument] = instrumentNotes;
+						return;
 					}
+
+					_.each(
+						instrumentNotes,
+						note => {
+							if (!validNotes[instrumentFolder][note]) {
+								console.log(instrument +'/' + note + ' is not a valid note');
+								invalidNotes[instrument] = invalidNotes[instrument] || [];
+								invalidNotes[instrument].push(note);
+							}
+						}
+					);
 				}
 			);
 
@@ -153,7 +171,7 @@ function generateZip(instrumentMap) {
 								if (notes && notes.length) {
 									const noteName = path.basename(filename, '.mp3');
 
-									if (!_.includes(normalizedNotes, noteName)) {
+									if (!_.includes(normalizedNoteMap, noteName)) {
 										continue;
 									}
 								}
@@ -173,6 +191,18 @@ function generateZip(instrumentMap) {
 					)
 			}
 		)
+	).then(
+		() => validNoteMapPromise
+	).then(
+		validNotes => {
+			zip.file(
+				'instrument-map.json',
+				JSON.stringify(validNotes),
+				{
+					binary: false
+				}
+			)
+		}
 	).then(
 		() => zip.generateAsync({type: 'nodebuffer'})
 	)
@@ -201,11 +231,23 @@ router.route('/instruments')
 		);
 	})
 	.post(function(req, res, next) {
-		const instrumentMap = req.body;
+		const instrumentMap = req.body.notes;
 
-		generateZip(instrumentMap).then(
-			result => res.type('application/zip').send(result)
-		).catch(ex => next(ex));
+		findInvalidNotes(instrumentMap).then(
+			invalidNotes => {
+				if (!_.isEmpty(invalidNotes)) {
+					res.status(404).json({
+						invalidNotes: invalidNotes
+					});
+				}
+				else {
+					generateZip(instrumentMap).then(
+						result => res.type('application/zip').send(result)
+					).catch(ex => next(ex));
+				}
+			}
+		);
+
 	});
 
 router.route('/:instrument')
