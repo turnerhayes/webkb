@@ -43,7 +43,7 @@
     "less-plugin-clean-css": "^1.5.1",
     "lodash": "^4.11.1",
     "merge-stream": "^1.0.0",
-    "mongoose": "^4.4.13",
+    "mongoose": "^5.10.3",
     "morgan": "^1.6.1",
     "passport": "^0.3.2",
     "passport-facebook": "^2.1.0",
